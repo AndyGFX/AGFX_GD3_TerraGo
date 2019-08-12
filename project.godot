@@ -8,9 +8,14 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Reference",
+"class": "TerraGo",
+"language": "GDScript",
+"path": "res://Scripts/TerraGo/TerraGo.gd"
+} ]
 _global_script_class_icons={
-
+"TerraGo": ""
 }
 
 [application]

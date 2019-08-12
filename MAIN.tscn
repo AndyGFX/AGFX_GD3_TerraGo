@@ -4,11 +4,63 @@
 [ext_resource path="res://Sprites/TmpSprite.png" type="Texture" id=2]
 
 [node name="MAIN" type="Node2D"]
-scale = Vector2( 4, 4 )
 script = ExtResource( 1 )
 noise_range = 0.422
 
 [node name="Preview" type="Sprite" parent="."]
 position = Vector2( 2.08787, 8.81463 )
+scale = Vector2( 2, 2 )
 texture = ExtResource( 2 )
 centered = false
+
+[node name="CaveNoisePreview" type="Sprite" parent="."]
+position = Vector2( 6, 303 )
+texture = ExtResource( 2 )
+centered = false
+
+[node name="OreNoisePreview" type="Sprite" parent="."]
+position = Vector2( 8, 465 )
+texture = ExtResource( 2 )
+centered = false
+
+[node name="OrePreview" type="Sprite" parent="."]
+position = Vector2( 551, 465 )
+texture = ExtResource( 2 )
+centered = false
+
+[node name="CavePreview" type="Sprite" parent="."]
+position = Vector2( 550, 303 )
+texture = ExtResource( 2 )
+centered = false
+
+[node name="Control" type="Control" parent="."]
+margin_right = 1026.0
+margin_bottom = 599.0
+
+[node name="Label" type="Label" parent="Control"]
+margin_left = 10.0
+margin_top = 283.0
+margin_right = 116.0
+margin_bottom = 297.0
+text = "Base CAVE noise"
+
+[node name="Label3" type="Label" parent="Control"]
+margin_left = 554.0
+margin_top = 283.0
+margin_right = 660.0
+margin_bottom = 297.0
+text = "Filtered CAVE noise"
+
+[node name="Label2" type="Label" parent="Control"]
+margin_left = 8.0
+margin_top = 448.0
+margin_right = 114.0
+margin_bottom = 462.0
+text = "Base ORE noise"
+
+[node name="Label4" type="Label" parent="Control"]
+margin_left = 552.0
+margin_top = 448.0
+margin_right = 658.0
+margin_bottom = 462.0
+text = "Filtered ORE noise"
