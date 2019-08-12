@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://MAIN.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/TmpSprite.png" type="Texture" id=2]
+
+[node name="MAIN" type="Node2D"]
+scale = Vector2( 4, 4 )
+script = ExtResource( 1 )
+noise_range = 0.082
+
+[node name="Preview" type="Sprite" parent="."]
+position = Vector2( 7.83787, 8.06463 )
+texture = ExtResource( 2 )
+centered = false
+
