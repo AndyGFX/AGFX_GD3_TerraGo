@@ -6,10 +6,9 @@
 [node name="MAIN" type="Node2D"]
 scale = Vector2( 4, 4 )
 script = ExtResource( 1 )
-noise_range = 0.082
+noise_range = 0.422
 
 [node name="Preview" type="Sprite" parent="."]
-position = Vector2( 7.83787, 8.06463 )
+position = Vector2( 2.08787, 8.81463 )
 texture = ExtResource( 2 )
 centered = false
-
