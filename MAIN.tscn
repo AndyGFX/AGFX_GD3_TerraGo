@@ -8,8 +8,7 @@ script = ExtResource( 1 )
 noise_range = 0.422
 
 [node name="Preview" type="Sprite" parent="."]
-position = Vector2( 2.08787, 8.81463 )
-scale = Vector2( 2, 2 )
+position = Vector2( 13, 35 )
 texture = ExtResource( 2 )
 centered = false
 
@@ -30,6 +29,11 @@ centered = false
 
 [node name="CavePreview" type="Sprite" parent="."]
 position = Vector2( 550, 303 )
+texture = ExtResource( 2 )
+centered = false
+
+[node name="LayerDistosrionPreview" type="Sprite" parent="."]
+position = Vector2( 548, 135 )
 texture = ExtResource( 2 )
 centered = false
 
@@ -64,3 +68,18 @@ margin_top = 448.0
 margin_right = 658.0
 margin_bottom = 462.0
 text = "Filtered ORE noise"
+
+[node name="Label5" type="Label" parent="Control"]
+margin_left = 12.0
+margin_top = 11.0
+margin_right = 130.0
+margin_bottom = 25.0
+text = "Result"
+
+[node name="Label6" type="Label" parent="Control"]
+margin_left = 549.0
+margin_top = 114.0
+margin_right = 667.0
+margin_bottom = 128.0
+text = "Layer distorion
+"

@@ -28,7 +28,9 @@ var _cave_noise_img:Image
 var _ore_noise_img:Image
 var _cave_img:Image
 var _ore_img:Image
+var _distor_img:Image
 var _final_img:Image
+
 
 func _init(w:int,h:int)->void:
 	self.width = w
@@ -46,6 +48,10 @@ func _init(w:int,h:int)->void:
 	
 	self._ore_img = Image.new()
 	self._ore_img.create(self.width,self.height,false,Image.FORMAT_RGBA8) 
+	
+	
+	self._distor_img = Image.new()
+	self._distor_img.create(self.width,self.height,false,Image.FORMAT_RGBA8) 
 	
 	self._final_img = Image.new()
 	self._final_img.create(self.width,self.height,false,Image.FORMAT_RGBA8) 
@@ -68,6 +74,8 @@ func Build()->void:
 	self._InitializeLayers()
 	self._BuildCave()
 	self._BuildOre()
+	self._MaskOreByCave()
+	self._BuildLayerDistorion()
 	self._BuildFinalTerrain()
 	
 	pass
@@ -110,13 +118,14 @@ func _SetOre()->void:
 
 
 func _BuildCave()->void:
-	var c:Color = Color.black
+	var c:Color = Color.white
 	var gray:float = 0
+	var layer_id:int = 0
 	self._cave_img.lock()
 	self._cave_noise_img.lock()
 	for x in range(self.width):
 		for y in range(self.height):
-			c = self._GetLayerColor(y)
+			
 			gray = self._cave_noise_img.get_pixel(x,y).gray()
 			if gray<=self.noise_cave_properties.balance:
 				self._cave_img.set_pixel(x,y,c)
@@ -148,8 +157,10 @@ func _BuildOre()->void:
 	self._ore_noise_img.lock()
 	for x in range(self.width):
 		for y in range(self.height):
-			c = self._GetLayerColor(y)
+			
 			layer_id = self._GetLayerId(y)
+			c = self.layers[layer_id].color
+			
 			gray = self._ore_noise_img.get_pixel(x,y).gray()
 			if gray>=self.noise_ore_properties.balance:
 				if randf()<self.layers[layer_id].chance:
@@ -161,7 +172,37 @@ func _BuildOre()->void:
 	
 	self._ore_noise_img.unlock()
 	self._ore_img.unlock()
+
+func _MaskOreByCave()->void:
+	self._ore_img.lock()
+	self._cave_img.lock()
+	for x in range(self.width):
+		for y in range(self.height):
+			
+			if self._cave_img.get_pixel(x,y)==Color.black:
+				self._ore_img.set_pixel(x,y,Color.black)
+			
+	self._ore_img.unlock()
+	self._cave_img.unlock()
+
+func _BuildLayerDistorion()->void:
+	var layer_id:float = 0
+	var c:Color = Color.black
 	
+	
+	
+	self._distor_img.lock()
+	for x in range(self.width):
+		for y in range(self.height):
+			layer_id = self._GetLayerId(y)
+			c = self.layers[layer_id].color
+			if y==self.layers[layer_id].depth:
+				var ny = self.layers[layer_id].distorsion[x]*self.layers[layer_id].depth/4
+				self._distor_img.set_pixel(x,y+ny,c)
+			#else:
+			#	self._distor_img.set_pixel(x,y,Color.black)
+	self._distor_img.unlock()
+
 func _BuildFinalTerrain()->void:
 	pass
 	

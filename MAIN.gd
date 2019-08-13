@@ -52,7 +52,7 @@ func _ready():
 	self.terrain.AddDepthLayer(64,"DIRT",Color.brown,0.8)
 	self.terrain.AddDepthLayer(96,"METAL",Color.yellow,0.5)
 	self.terrain.AddDepthLayer(104,"DIAMOD",Color.olive,0.2)
-	self.terrain.AddDepthLayer(128,"LAVA",Color.red,1)
+	self.terrain.AddDepthLayer(127,"LAVA",Color.red,1)
 	
 	self.terrain.Build()
 	$CaveNoisePreview.set_texture(Utils.CreateTextureFromImage(self.terrain._cave_noise_img))
@@ -60,6 +60,7 @@ func _ready():
 	
 	$CavePreview.set_texture(Utils.CreateTextureFromImage(self.terrain._cave_img))
 	$OrePreview.set_texture(Utils.CreateTextureFromImage(self.terrain._ore_img))
+	$LayerDistosrionPreview.set_texture(Utils.CreateTextureFromImage(self.terrain._distor_img))
 	
 func GetAsImage(w,h):
 	self.paint = noise.get_image(w,h)
