@@ -1,47 +1,29 @@
 extends Node2D
 
-export (float,0,1) var noise_range = 0.5
-var noise = OpenSimplexNoise.new()
-var preview = null
-var paint = null
-var width:int = 512
-var height:int = 128
+
+export (int) var width  = 512
+export (int) var height  = 128
+export (int) var userSeed  = 128
+export (float) var caveBalance  = 0.4
+export (float) var oreBalance  = 0.6
 
 var terrain:TerraGo = null
 
-# Called when the node enters the scene tree for the first time.
+
 func _ready():
 	
-	noise.seed = 2019
-	noise.lacunarity = 1
-	noise.octaves = 1
-	noise.period = 10.0
-	noise.persistence = 0.8
-	
-	self.preview = $Preview
-	self.paint = Image.new()
-	self.paint.create(self.width,self.height,false,Image.FORMAT_RGBA8) 
-	
-	self.GetAsImage(self.width,self.height)
-	self.BuildLandscape(32)
-	self.BuildTerrain()
-	
-	
-	$Preview.set_texture(Utils.CreateTextureFromImage(self.paint))
-	
-	# ----------------------------------------------------------------
 	
 	self.terrain = TerraGo.new(self.width,self.height)
 	
-	self.terrain.noise_cave_properties.balance = 0.4
-	self.terrain.noise_cave_properties.userSeed = 2019
+	self.terrain.noise_cave_properties.balance = self.caveBalance
+	self.terrain.noise_cave_properties.userSeed = self.userSeed
 	self.terrain.noise_cave_properties.lacunarity = 1
 	self.terrain.noise_cave_properties.octaves = 1
 	self.terrain.noise_cave_properties.period = 10
 	self.terrain.noise_cave_properties.persistence = 0.8
 	
-	self.terrain.noise_ore_properties.balance = 0.6
-	self.terrain.noise_ore_properties.userSeed = 512
+	self.terrain.noise_ore_properties.balance = self.oreBalance
+	self.terrain.noise_ore_properties.userSeed = self.userSeed
 	self.terrain.noise_ore_properties.lacunarity = 8
 	self.terrain.noise_ore_properties.octaves = 6
 	self.terrain.noise_ore_properties.period = 30
@@ -55,6 +37,7 @@ func _ready():
 	self.terrain.AddDepthLayer(127,"LAVA",Color.red,1)
 	
 	self.terrain.Build()
+	
 	$CaveNoisePreview.set_texture(Utils.CreateTextureFromImage(self.terrain._cave_noise_img))
 	$OreNoisePreview.set_texture(Utils.CreateTextureFromImage(self.terrain._ore_noise_img))
 	
@@ -62,57 +45,57 @@ func _ready():
 	$OrePreview.set_texture(Utils.CreateTextureFromImage(self.terrain._ore_img))
 	$LayerDistosrionPreview.set_texture(Utils.CreateTextureFromImage(self.terrain._distor_img))
 	
-func GetAsImage(w,h):
-	self.paint = noise.get_image(w,h)
-	$Preview.set_texture(Utils.CreateTextureFromImage(self.paint))
-	pass
-
-func BuildTerrain():
-	var c:Color = Color.black
-	var gray:float = 0
-	self.paint.lock()
-	for x in range(self.width):
-		for y in range(self.height):
-			c = self.paint.get_pixel(x,y)
-			gray = self.paint.get_pixel(x,y).gray()
-			if c!=Color.blue:
-				if gray<=0.5:
-					self.paint.set_pixel(x,y,Color(0,0,0,1))
-				else:
-					self.paint.set_pixel(x,y,Color(1,1,1,1))
-				
-			pass
-		pass
-	
-	self.paint.unlock()
-
-
-func BuildLandscape(height):
-	
-	var line = rand_range(0,self.height)
-	self.paint.lock()
-	for x in range(self.width):
-		var gray = self.paint.get_pixel(x,line).gray()
-		for y in range(0,gray*height):
-			self.paint.set_pixel(x,y,Color.blue)
-		pass
-	self.paint.unlock()
-	pass
-
-
-func TestNoise():
-	self.paint.lock()
-	for x in range(self.width):
-		for y in range(self.height):
-			var value = lerp(0.0,1.0,1+noise.get_noise_2d(x,y))
-			
-			#self.paint.set_pixel(x,y,Color(value,value,value,1))
-			if value>=0.1 and value<=0.9:
-				self.paint.set_pixel(x,y,Color(0,0,0,1))
-			else:
-				self.paint.set_pixel(x,y,Color(1,1,1,1))
-		pass
-	self.paint.unlock()
-		
-	
-	pass
+#func GetAsImage(w,h):
+#	self.paint = noise.get_image(w,h)
+#	$Preview.set_texture(Utils.CreateTextureFromImage(self.paint))
+#	pass
+#
+#func BuildTerrain():
+#	var c:Color = Color.black
+#	var gray:float = 0
+#	self.paint.lock()
+#	for x in range(self.width):
+#		for y in range(self.height):
+#			c = self.paint.get_pixel(x,y)
+#			gray = self.paint.get_pixel(x,y).gray()
+#			if c!=Color.blue:
+#				if gray<=0.5:
+#					self.paint.set_pixel(x,y,Color(0,0,0,1))
+#				else:
+#					self.paint.set_pixel(x,y,Color(1,1,1,1))
+#
+#			pass
+#		pass
+#
+#	self.paint.unlock()
+#
+#
+#func BuildLandscape(height):
+#
+#	var line = rand_range(0,self.height)
+#	self.paint.lock()
+#	for x in range(self.width):
+#		var gray = self.paint.get_pixel(x,line).gray()
+#		for y in range(0,gray*height):
+#			self.paint.set_pixel(x,y,Color.blue)
+#		pass
+#	self.paint.unlock()
+#	pass
+#
+#
+#func TestNoise():
+#	self.paint.lock()
+#	for x in range(self.width):
+#		for y in range(self.height):
+#			var value = lerp(0.0,1.0,1+noise.get_noise_2d(x,y))
+#
+#			#self.paint.set_pixel(x,y,Color(value,value,value,1))
+#			if value>=0.1 and value<=0.9:
+#				self.paint.set_pixel(x,y,Color(0,0,0,1))
+#			else:
+#				self.paint.set_pixel(x,y,Color(1,1,1,1))
+#		pass
+#	self.paint.unlock()
+#
+#
+#	pass
