@@ -73,13 +73,18 @@ func Build()->void:
 	self._SetOre()
 	self._InitializeLayers()
 	self._BuildCave()
-	self._BuildOre()
-	self._MaskOreByCave()
-	self._BuildLayerDistorion()
+	self._BuildOre()	
+	self._BuildLayerDistorion() # only for preview
 	self._BuildFinalTerrain()
+	self.AddSky()
 	
 	pass
-	
+
+func _SetPixel(where:Image,x:int,y:int,color:Color)->void:
+	if y>=0 and y<self.height:
+		where.set_pixel(x,y,color)
+	pass
+
 func _InitializeLayers()->void:
 	
 	self._cave_noise_img.lock()
@@ -128,9 +133,9 @@ func _BuildCave()->void:
 			
 			gray = self._cave_noise_img.get_pixel(x,y).gray()
 			if gray<=self.noise_cave_properties.balance:
-				self._cave_img.set_pixel(x,y,c)
+				self._SetPixel(_cave_img,x,y,c)				
 			else:
-				self._cave_img.set_pixel(x,y,Color(0,0,0,1))
+				self._SetPixel(_cave_img,x,y,Color(0,0,0,1))
 	
 	self._cave_noise_img.unlock()
 	self._cave_img.unlock()
@@ -157,39 +162,33 @@ func _BuildOre()->void:
 	self._ore_noise_img.lock()
 	for x in range(self.width):
 		for y in range(self.height):
+			self._SetPixel(_ore_img,x,y,Color.black)
+			
+	for x in range(self.width):
+		for y in range(self.height):
 			
 			layer_id = self._GetLayerId(y)
 			c = self.layers[layer_id].color
-			
+			var ny=y+self._GetHeightByDistorsion(x,y)
 			gray = self._ore_noise_img.get_pixel(x,y).gray()
 			if gray>=self.noise_ore_properties.balance:
 				if randf()<self.layers[layer_id].chance:
-					self._ore_img.set_pixel(x,y,c)
-				else:
-					self._ore_img.set_pixel(x,y,Color.black)
-			else:
-				self._ore_img.set_pixel(x,y,Color.black)
+					self._SetPixel(_ore_img,x,ny,c)
+			
+			
 	
 	self._ore_noise_img.unlock()
 	self._ore_img.unlock()
 
-func _MaskOreByCave()->void:
-	self._ore_img.lock()
-	self._cave_img.lock()
-	for x in range(self.width):
-		for y in range(self.height):
-			
-			if self._cave_img.get_pixel(x,y)==Color.black:
-				self._ore_img.set_pixel(x,y,Color.black)
-			
-	self._ore_img.unlock()
-	self._cave_img.unlock()
+func _GetHeightByDistorsion(x:int,y:int)->int:
+	var layer_id = self._GetLayerId(y)
+	var ny = self.layers[layer_id].distorsion[x]*self.layers[layer_id].depth/4
+	return ny
+
 
 func _BuildLayerDistorion()->void:
 	var layer_id:float = 0
 	var c:Color = Color.black
-	
-	
 	
 	self._distor_img.lock()
 	for x in range(self.width):
@@ -197,12 +196,42 @@ func _BuildLayerDistorion()->void:
 			layer_id = self._GetLayerId(y)
 			c = self.layers[layer_id].color
 			if y==self.layers[layer_id].depth:
-				var ny = self.layers[layer_id].distorsion[x]*self.layers[layer_id].depth/4
-				self._distor_img.set_pixel(x,y+ny,c)
-			#else:
-			#	self._distor_img.set_pixel(x,y,Color.black)
+				var ny = self._GetHeightByDistorsion(x,y)
+				self._SetPixel(_distor_img,x,y+ny,c)
 	self._distor_img.unlock()
 
-func _BuildFinalTerrain()->void:
+func AddSky()->void:
+
+	
+	self._final_img.lock()
+	for x in range(self.width):
+		var gray = self.layers[0].distorsion[x]
+		for y in range(0,gray*height/4):
+			self._SetPixel(_final_img,x,y,Color.blue)
+		pass
+	self._final_img.unlock()
 	pass
+
+func _BuildFinalTerrain()->void:
+	self._ore_img.lock()
+	self._cave_img.lock()
+	self._final_img.lock()
+	for x in range(self.width):
+		for y in range(self.height):
+			var cc = self._cave_img.get_pixel(x,y)
+			var co = self._ore_img.get_pixel(x,y)
+			var layer_id = self._GetLayerId(y)
+			if cc==Color.white:
+				if co!=Color.black:
+					self._SetPixel(_final_img,x,y,co)
+				else:
+					self._SetPixel(_final_img,x,y,Color.brown)
+			else:
+				self._SetPixel(_final_img,x,y,Color.black)
+		pass
+	self._ore_img.unlock()
+	self._cave_img.unlock()
+	self._final_img.unlock()
+	
+
 	
